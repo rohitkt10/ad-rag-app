@@ -37,7 +37,8 @@ class AnswerGenerator:
 
         return f"""You are an expert Alzheimer's Disease researcher. 
 Answer the user's question using ONLY the provided context below.
-If the context does not contain enough information to answer, say "I don't know based on the provided context."
+If the context does not contain enough information to answer, 
+say "I don't know based on the provided context."
 Cite the context chunks you use by their ID, e.g. [1], [2].
 Every factual statement must be cited.
 
