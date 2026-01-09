@@ -163,7 +163,7 @@ def build_chunk_records_for_article(
         return []
 
     records = []
-    chunk_idx_overall = 0  # This is per-article here, but script did global ID.
+    # This is per-article here, but script did global ID.
     # The script used a global `chunk_id`.
     # The function signature returns a list, so we can assign global IDs later
     # OR we just return the records and let the caller assign/fix global IDs?
