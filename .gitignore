@@ -124,5 +124,7 @@ docker-compose.override.yml
 message_to_web_gemini.md
 docs/PLAN.md 
 docs/PRD.md
+docs/SERVICE_PLAN.md
 GEMINI.md
 CHANGELOG_INTERNAL.md
+docs/education/
