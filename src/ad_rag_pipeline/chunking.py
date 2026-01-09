@@ -8,6 +8,7 @@ from typing import Any
 
 
 def _text(elem: ET.Element | None) -> str:
+    """Extract and normalize text from an XML element."""
     if elem is None:
         return ""
     return "".join(elem.itertext()).strip()

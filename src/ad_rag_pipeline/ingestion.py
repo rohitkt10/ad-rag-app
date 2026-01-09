@@ -13,6 +13,13 @@ logger = logging.getLogger(__name__)
 
 
 def _init_entrez(email: str, api_key: str | None = None) -> None:
+    """
+    Initialize NCBI Entrez global configuration.
+
+    Args:
+        email: User email (required by NCBI).
+        api_key: Optional NCBI API key for higher rate limits.
+    """
     Entrez.email = email
     if api_key:
         Entrez.api_key = api_key
@@ -61,6 +68,13 @@ def fetch_pmc_xml(pmcid: str, out_path: Path) -> bool:
 
 
 def _write_jsonl(path: Path, record: dict[str, Any]) -> None:
+    """
+    Append a single record as a JSON line to the specified file.
+
+    Args:
+        path: Path to the JSONL file.
+        record: Dictionary to serialize and append.
+    """
     with path.open("a", encoding="utf-8") as f:
         f.write(json.dumps(record, ensure_ascii=False) + "\n")
 
