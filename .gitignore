@@ -123,5 +123,6 @@ docker-compose.override.yml
 *~
 message_to_web_gemini.md
 docs/PLAN.md 
-docs/PRD.mdGEMINI.md
+docs/PRD.md
+GEMINI.md
 CHANGELOG_INTERNAL.md
