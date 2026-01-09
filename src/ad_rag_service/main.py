@@ -5,7 +5,7 @@ import sys
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException, status
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from ad_rag_pipeline import config as pipeline_config  # For EMBEDDING_MODEL_ID and DEVICE
 from ad_rag_service import config
@@ -113,7 +113,7 @@ async def health_check():
 
 
 class QueryRequest(BaseModel):
-    question: str
+    question: str = Field(..., max_length=1000)
 
 
 @app.post("/query", response_model=AnswerWithCitations)
