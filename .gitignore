@@ -1,0 +1,126 @@
+# ---- Python bytecode / caches ----
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.cache/
+.mypy_cache/
+.pytype/
+.pyre/
+.ruff_cache/
+.pyright/
+.hypothesis/
+.tox/
+.nox/
+.ipynb_checkpoints/
+
+# ---- Virtual envs ----
+.venv/
+venv/
+ENV/
+env/
+.virtualenv/
+.conda/
+conda-env/
+
+# ---- Packaging / build ----
+build/
+dist/
+*.egg-info/
+.eggs/
+pip-wheel-metadata/
+wheelhouse/
+*.whl
+MANIFEST
+*.spec
+
+# ---- Logs / runtime ----
+*.log
+logs/
+*.pid
+*.seed
+*.sqlite3
+*.db
+
+# ---- Secrets / local config ----
+.env
+.env.*
+!.env.example
+secrets/
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+
+# ---- Data / artifacts (keep repo clean) ----
+data/
+datasets/
+artifacts/
+outputs/
+results/
+runs/
+mlruns/
+models/
+checkpoints/
+wandb/
+lightning_logs/
+tensorboard/
+tb_logs/
+cache/
+tmp/
+temp/
+!data/.gitkeep
+
+# ---- Jupyter / notebooks ----
+notebooks/.ipynb_checkpoints/
+!notebooks/.gitkeep
+
+# ---- Node / frontend (common in app repos) ----
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.next/
+out/
+dist/
+.build/
+
+# ---- OS files ----
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# ---- IDE / editor ----
+.vscode/
+!.vscode/extensions.json
+.idea/
+*.iml
+*.sublime-project
+*.sublime-workspace
+
+
+# ---- Docker ----
+docker-compose.override.yml
+
+# ---- Misc ----
+*.bak
+*.swp
+*~
+message_to_web_gemini.md
+docs/PLAN.md 
+docs/PRD.md
