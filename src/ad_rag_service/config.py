@@ -49,7 +49,9 @@ ANTHROPIC_API_KEY_ENV = "ANTHROPIC_API_KEY"
 if LLM_PROVIDER == "openai":
     LLM_MODEL_NAME = os.getenv("OPENAI_MODEL_NAME", "gpt-5.1")
 elif LLM_PROVIDER == "anthropic":
-    LLM_MODEL_NAME = os.getenv("ANTHROPIC_MODEL_NAME", "claude-3-5-sonnet") # Updated to reflect latest known
+    LLM_MODEL_NAME = os.getenv(
+        "ANTHROPIC_MODEL_NAME", "claude-3-5-sonnet"
+    )  # Updated to reflect latest known
 else:  # LLM_PROVIDER == "dummy"
     LLM_MODEL_NAME = "dummy-model"
 

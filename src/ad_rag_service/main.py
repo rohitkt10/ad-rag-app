@@ -10,9 +10,8 @@ from pydantic import BaseModel, Field
 from ad_rag_pipeline import config as pipeline_config  # For EMBEDDING_MODEL_ID and DEVICE
 from ad_rag_service import config
 from ad_rag_service.generator import AnswerGenerator
-from ad_rag_service.indexing import IndexStore
+from ad_rag_service.indexing import IndexStore  # Added import
 from ad_rag_service.llm.dummy_client import LLMClientImpl
-from ad_rag_service.llm.interface import LLMClient
 from ad_rag_service.retrieval import Retriever
 from ad_rag_service.service import RAGService
 from ad_rag_service.types import AnswerWithCitations

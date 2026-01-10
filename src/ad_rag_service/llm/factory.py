@@ -17,8 +17,10 @@ def get_llm_client() -> LLMClient:
         logger.info("Using Dummy LLM client.")
         return LLMClientImpl()
     elif config.LLM_PROVIDER == "openai":
-        # TODO: Implement OpenAI client in Phase 2
-        raise NotImplementedError("OpenAI client not yet implemented.")
+        from ad_rag_service.llm.openai_client import OpenAIClient
+
+        logger.info("Using OpenAI LLM client.")
+        return OpenAIClient()
     elif config.LLM_PROVIDER == "anthropic":
         # TODO: Implement Anthropic client in Phase 3
         raise NotImplementedError("Anthropic client not yet implemented.")
