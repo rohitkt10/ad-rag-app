@@ -22,8 +22,10 @@ def get_llm_client() -> LLMClient:
         logger.info("Using OpenAI LLM client.")
         return OpenAIClient()
     elif config.LLM_PROVIDER == "anthropic":
-        # TODO: Implement Anthropic client in Phase 3
-        raise NotImplementedError("Anthropic client not yet implemented.")
+        from ad_rag_service.llm.anthropic_client import AnthropicClient
+
+        logger.info("Using Anthropic LLM client.")
+        return AnthropicClient()
     else:
         # This case should ideally be caught by config validation, but as a safeguard
         raise ValueError(f"Unknown LLM provider: {config.LLM_PROVIDER}")

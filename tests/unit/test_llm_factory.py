@@ -109,17 +109,19 @@ def test_get_llm_client_openai_success(set_env_vars):
     assert config.LLM_MODEL_NAME == "gpt-5.1"
 
 
-def test_get_llm_client_anthropic_not_implemented(set_env_vars):
+def test_get_llm_client_anthropic_success(set_env_vars):
     """
-    Test that get_llm_client raises NotImplementedError for anthropic provider (Phase 3).
+    Test that get_llm_client returns AnthropicClient when LLM_PROVIDER is anthropic.
     """
     os.environ["LLM_PROVIDER"] = "anthropic"
+    os.environ["ANTHROPIC_API_KEY"] = "sk-ant-fake"
     import importlib
 
     importlib.reload(config)
 
-    with pytest.raises(NotImplementedError, match="Anthropic client not yet implemented"):
-        get_llm_client()
+    with patch("ad_rag_service.llm.anthropic_client.AnthropicClient") as MockClient:
+        client = get_llm_client()
+        assert client == MockClient.return_value
 
     assert config.LLM_MODEL_NAME == "claude-3-5-sonnet"
 
