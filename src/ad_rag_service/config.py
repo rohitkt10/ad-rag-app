@@ -10,7 +10,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 try:
     from dotenv import load_dotenv
 
-    load_dotenv(REPO_ROOT / ".env")
+    load_dotenv(REPO_ROOT / ".env", override=True)
 except ImportError:
     pass
 
@@ -28,10 +28,31 @@ TOP_K = 5
 MAX_CONTEXT_TOKENS = 3000  # Conservative limit for context window
 
 # LLM Config
-# Using google/flan-t5-base or similar as default if not specified,
-# but for the "service", we might assume an API-based LLM or local.
-# The plan mentions "LLM settings".
-LLM_MODEL_NAME = os.getenv("LLM_MODEL_NAME", "gemini-1.5-flash")  # Example default
+# --- LLM Provider and Model Selection ---
+# To add a new LLM provider:
+# 1. Add the provider name to ALLOWED_PROVIDERS.
+# 2. Add an 'elif' block below for the new provider to set its default model
+#    (e.g., using os.getenv("<NEW_PROVIDER>_MODEL_NAME", "default_model_id")).
+# 3. Define the API key environment variable name for the new provider.
+
+ALLOWED_PROVIDERS = {"openai", "anthropic", "dummy"}
+LLM_PROVIDER = os.getenv("LLM_PROVIDER", "dummy")
+
+if LLM_PROVIDER not in ALLOWED_PROVIDERS:
+    raise ValueError(
+        f"Invalid LLM_PROVIDER: {LLM_PROVIDER}. Must be one of {list(ALLOWED_PROVIDERS)}"
+    )
+
+OPENAI_API_KEY_ENV = "OPENAI_API_KEY"
+ANTHROPIC_API_KEY_ENV = "ANTHROPIC_API_KEY"
+
+if LLM_PROVIDER == "openai":
+    LLM_MODEL_NAME = os.getenv("OPENAI_MODEL_NAME", "gpt-5.1")
+elif LLM_PROVIDER == "anthropic":
+    LLM_MODEL_NAME = os.getenv("ANTHROPIC_MODEL_NAME", "claude-3-5-sonnet") # Updated to reflect latest known
+else:  # LLM_PROVIDER == "dummy"
+    LLM_MODEL_NAME = "dummy-model"
+
 LLM_TEMPERATURE = float(os.getenv("LLM_TEMPERATURE", "0.0"))
 LLM_MAX_TOKENS = int(os.getenv("LLM_MAX_TOKENS", "512"))
 

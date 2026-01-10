@@ -1,9 +1,55 @@
 from __future__ import annotations
 
+import os
+import pytest
 from pathlib import Path
 
 from ad_rag_service import config
 from ad_rag_service.types import AnswerWithCitations, ChunkRecord, Citation, RetrievedChunk
+
+
+# Fixture to clear and reset environment variables related to config for each test
+@pytest.fixture(autouse=True)
+def reset_config_env_vars():
+    original_llm_provider = os.getenv("LLM_PROVIDER")
+    original_openai_model = os.getenv("OPENAI_MODEL_NAME")
+    original_anthropic_model = os.getenv("ANTHROPIC_MODEL_NAME")
+
+    keys_to_clear = ["LLM_PROVIDER", "OPENAI_MODEL_NAME", "ANTHROPIC_MODEL_NAME"]
+    for key in keys_to_clear:
+        if key in os.environ:
+            del os.environ[key]
+
+    # Reload config to ensure a clean state
+    import importlib
+    importlib.reload(config)
+
+    yield
+
+    # Restore original env vars
+    for key in keys_to_clear:
+        if key == "LLM_PROVIDER":
+            # Ensure LLM_PROVIDER is valid or unset before reloading config
+            if original_llm_provider in config.ALLOWED_PROVIDERS:
+                os.environ["LLM_PROVIDER"] = original_llm_provider
+            else:
+                if "LLM_PROVIDER" in os.environ:
+                    del os.environ["LLM_PROVIDER"]
+        elif key == "OPENAI_MODEL_NAME":
+            if original_openai_model is not None:
+                os.environ["OPENAI_MODEL_NAME"] = original_openai_model
+            else:
+                if "OPENAI_MODEL_NAME" in os.environ:
+                    del os.environ["OPENAI_MODEL_NAME"]
+        elif key == "ANTHROPIC_MODEL_NAME":
+            if original_anthropic_model is not None:
+                os.environ["ANTHROPIC_MODEL_NAME"] = original_anthropic_model
+            else:
+                if "ANTHROPIC_MODEL_NAME" in os.environ:
+                    del os.environ["ANTHROPIC_MODEL_NAME"]
+    
+    # Reload config again after restoring env vars
+    importlib.reload(config)
 
 
 def test_config_paths():
@@ -14,29 +60,71 @@ def test_config_paths():
     assert str(config.INDEX_DIR).endswith("artifacts/index")
 
 
-def test_config_defaults():
-    assert config.TOP_K == 5
-    assert config.MAX_CONTEXT_TOKENS == 3000
-    assert config.LLM_MODEL_NAME == "gemini-1.5-flash"
+def test_config_defaults_dummy():
+    # When no LLM_PROVIDER is set, it defaults to 'dummy'
+    assert config.LLM_PROVIDER == "dummy"
+    assert config.LLM_MODEL_NAME == "dummy-model"
     assert config.LLM_TEMPERATURE == 0.0
     assert config.LLM_MAX_TOKENS == 512
+    assert config.OPENAI_API_KEY_ENV == "OPENAI_API_KEY"
+    assert config.ANTHROPIC_API_KEY_ENV == "ANTHROPIC_API_KEY"
 
 
-def test_config_env_overrides(monkeypatch):
-    monkeypatch.setenv("LLM_MODEL_NAME", "gpt-4")
-    monkeypatch.setenv("LLM_TEMPERATURE", "0.5")
-    monkeypatch.setenv("TOP_K", "10")  # Should not be overridden as it's not from os.getenv
+def test_config_allowed_providers():
+    assert "openai" in config.ALLOWED_PROVIDERS
+    assert "anthropic" in config.ALLOWED_PROVIDERS
+    assert "dummy" in config.ALLOWED_PROVIDERS
 
-    # Reload config to pick up env vars
-    # This is a bit hacky but needed for testing module-level constants
+
+def test_config_invalid_provider_raises_error():
+    os.environ["LLM_PROVIDER"] = "invalid_provider"
+    with pytest.raises(ValueError, match="Invalid LLM_PROVIDER"):
+        import importlib
+        importlib.reload(config)
+
+
+def test_config_openai_defaults():
+    os.environ["LLM_PROVIDER"] = "openai"
     import importlib
-
     importlib.reload(config)
+    assert config.LLM_PROVIDER == "openai"
+    assert config.LLM_MODEL_NAME == "gpt-5.1"
 
-    assert config.LLM_MODEL_NAME == "gpt-4"
-    assert config.LLM_TEMPERATURE == 0.5
-    # TOP_K should not change as it's not loaded from env var
-    assert config.TOP_K == 5
+
+def test_config_anthropic_defaults():
+    os.environ["LLM_PROVIDER"] = "anthropic"
+    import importlib
+    importlib.reload(config)
+    assert config.LLM_PROVIDER == "anthropic"
+    assert config.LLM_MODEL_NAME == "claude-3-5-sonnet"
+
+
+def test_config_openai_model_override():
+    os.environ["LLM_PROVIDER"] = "openai"
+    os.environ["OPENAI_MODEL_NAME"] = "gpt-custom"
+    import importlib
+    importlib.reload(config)
+    assert config.LLM_PROVIDER == "openai"
+    assert config.LLM_MODEL_NAME == "gpt-custom"
+
+
+def test_config_anthropic_model_override():
+    os.environ["LLM_PROVIDER"] = "anthropic"
+    os.environ["ANTHROPIC_MODEL_NAME"] = "claude-custom"
+    import importlib
+    importlib.reload(config)
+    assert config.LLM_PROVIDER == "anthropic"
+    assert config.LLM_MODEL_NAME == "claude-custom"
+
+
+def test_config_generic_llm_model_name_ignored_if_provider_specific_exists():
+    os.environ["LLM_PROVIDER"] = "openai"
+    os.environ["LLM_MODEL_NAME"] = "ignored-model" # This should be ignored by the new logic
+    os.environ["OPENAI_MODEL_NAME"] = "gpt-specific"
+    import importlib
+    importlib.reload(config)
+    assert config.LLM_PROVIDER == "openai"
+    assert config.LLM_MODEL_NAME == "gpt-specific"
 
 
 def test_chunk_record_creation():

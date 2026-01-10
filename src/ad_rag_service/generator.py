@@ -2,17 +2,11 @@ from __future__ import annotations
 
 import logging
 import re
-from typing import Protocol
 
+from ad_rag_service.llm.interface import LLMClient
 from ad_rag_service.types import AnswerWithCitations, Citation, RetrievedChunk
 
 logger = logging.getLogger(__name__)
-
-
-class LLMClient(Protocol):
-    """Abstract interface for an LLM provider."""
-
-    def complete(self, prompt: str, temperature: float = 0.0, max_tokens: int = 512) -> str: ...
 
 
 class AnswerGenerator:
