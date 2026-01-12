@@ -67,6 +67,7 @@ def test_config_defaults_dummy():
     # We enforce 'dummy' here because .env might be present in the dev environment
     os.environ["LLM_PROVIDER"] = "dummy"
     import importlib
+
     importlib.reload(config)
 
     assert config.LLM_PROVIDER == "dummy"
