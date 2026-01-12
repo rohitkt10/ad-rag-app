@@ -18,23 +18,21 @@ A specialized Retrieval-Augmented Generation (RAG) system for Alzheimer’s Dise
 ```mermaid
 flowchart LR
   subgraph Offline["Offline pipeline (build artifacts)"]
-    A[PMC XML in data/raw] --> B[Ingest + Parse\n(ad_rag_pipeline)]
-    B --> C[Chunking\n(section-aware + overlap)]
-    C --> D[Embed chunks\nSentenceTransformers]
-    D --> E[FAISS index + lookup + manifest\nartifacts/]
+    A["PMC XML (data/raw)"] --> B["Ingest + parse (ad_rag_pipeline)"]
+    B --> C["Chunk (section-aware, overlap)"]
+    C --> D["Embed chunks (SentenceTransformers)"]
+    D --> E["FAISS index + lookup + manifest (artifacts/)"]
   end
 
   subgraph Online["Online serving (query time)"]
-    U[User] --> UI[Streamlit UI\nad_rag_ui]
-    UI --> API[FastAPI Service\nad_rag_service]
-    API --> R[Retriever\nFAISS + embed query]
-    R --> G[Generator\nOpenAI/Anthropic]
-    R -->|top-k chunks + scores| API
-    G -->|answer w/ citations| API
+    U["User"] --> UI["Streamlit UI (ad_rag_ui)"]
+    UI --> API["FastAPI service (ad_rag_service)"]
+    API --> R["Retriever: embed query + FAISS search"]
+    R --> API
+    API --> G["Generator: LLM call with top-k chunks"]
+    G --> API
     API --> UI --> U
   end
-
-  E --> R
 ```
 
 ## Prerequisites
