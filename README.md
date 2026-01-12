@@ -1,4 +1,3 @@
-````md
 # Alzheimer’s Disease Biomarkers Q&A RAG Microservice
 
 [![CI](https://github.com/rohitpc/ad-rag-app/actions/workflows/ci.yml/badge.svg)](https://github.com/rohitpc/ad-rag-app/actions/workflows/ci.yml)
@@ -13,6 +12,30 @@ A specialized Retrieval-Augmented Generation (RAG) system for Alzheimer’s Dise
 - **Interactive UI**: A Streamlit-based web interface for querying and exploring citations.
 - **Citations**: Provides grounded answers with links to specific source chunks and relevance scores.
 - **API**: FastAPI backend with health, metadata, retrieval-only, and full RAG query endpoints.
+
+## Architecture
+
+```mermaid
+flowchart LR
+  subgraph Offline["Offline pipeline (build artifacts)"]
+    A[PMC XML in data/raw] --> B[Ingest + Parse\n(ad_rag_pipeline)]
+    B --> C[Chunking\n(section-aware + overlap)]
+    C --> D[Embed chunks\nSentenceTransformers]
+    D --> E[FAISS index + lookup + manifest\nartifacts/]
+  end
+
+  subgraph Online["Online serving (query time)"]
+    U[User] --> UI[Streamlit UI\nad_rag_ui]
+    UI --> API[FastAPI Service\nad_rag_service]
+    API --> R[Retriever\nFAISS + embed query]
+    R --> G[Generator\nOpenAI/Anthropic]
+    R -->|top-k chunks + scores| API
+    G -->|answer w/ citations| API
+    API --> UI --> U
+  end
+
+  E --> R
+```
 
 ## Prerequisites
 
