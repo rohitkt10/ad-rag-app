@@ -11,7 +11,7 @@ from ad_rag_pipeline import config as pipeline_config  # For EMBEDDING_MODEL_ID 
 from ad_rag_service import config
 from ad_rag_service.generator import AnswerGenerator
 from ad_rag_service.indexing import IndexStore  # Added import
-from ad_rag_service.llm.dummy_client import LLMClientImpl
+from ad_rag_service.llm.factory import get_llm_client
 from ad_rag_service.retrieval import Retriever
 from ad_rag_service.service import RAGService
 from ad_rag_service.types import AnswerWithCitations
@@ -53,7 +53,7 @@ async def lifespan(app: FastAPI):
         logger.info("Retriever initialized.")
 
         # Phase 3: Generator
-        llm_client = LLMClientImpl()  # This will be replaced by actual LLM provider integration
+        llm_client = get_llm_client()
         generator = AnswerGenerator(llm_client)
         logger.info("Generator initialized.")
 

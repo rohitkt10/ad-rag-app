@@ -34,8 +34,8 @@ def mock_rag_service_instance():
 def client():
     # Patch the global rag_service instance at the module level for the test client
     with patch("ad_rag_service.main.rag_service", new_callable=mock_rag_service_instance):
-        # Patch the actual LLMClientImpl during app startup for a clean mock
-        with patch("ad_rag_service.main.LLMClientImpl", new=MockLLMClientImpl):
+        # Patch the factory function to return a mock client
+        with patch("ad_rag_service.main.get_llm_client", return_value=MockLLMClientImpl()):
             from ad_rag_service.main import app
 
             yield TestClient(app)

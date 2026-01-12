@@ -8,6 +8,7 @@ from sentence_transformers import SentenceTransformer
 
 from ad_rag_service.indexing import IndexStore
 from ad_rag_service.types import RetrievedChunk
+from ad_rag_service import config 
 
 logger = logging.getLogger(__name__)
 
@@ -50,7 +51,7 @@ class Retriever:
             logger.info(f"Loading embedding model: {model_id} on {device}")
             self.embedder = SentenceTransformer(model_id, device=device)
 
-    def retrieve(self, query: str, k: int = 5) -> list[RetrievedChunk]:
+    def retrieve(self, query: str, k: config.TOP_K) -> list[RetrievedChunk]:
         """
         Retrieve top-k relevant chunks for a query.
 

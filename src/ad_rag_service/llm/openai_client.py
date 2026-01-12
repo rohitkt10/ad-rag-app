@@ -37,23 +37,45 @@ class OpenAIClient(LLMClient):
         Generate a completion using OpenAI.
         """
         try:
+            # Estimate a safe word limit (approx 0.5 words per token)
+            safe_word_limit = int(max_tokens * 0.5)
+            system_instruction = (
+                f"\n\nNote: This request has an upper limit on number of output tokens. "
+                f"Please keep your answer to within approximately {safe_word_limit} words."
+            )
+            final_prompt = prompt + system_instruction
+
             logger.debug(
                 "Sending request to OpenAI (model=%s, temp=%s, max_tokens=%s)",
                 self.model,
                 temperature,
                 max_tokens,
             )
+            logger.debug(f"Prompt (first 500 chars): {final_prompt[:500]}...")
+
             response = self.client.chat.completions.create(
                 model=self.model,
-                messages=[{"role": "user", "content": prompt}],
+                messages=[{"role": "user", "content": final_prompt}],
                 temperature=temperature,
-                max_tokens=max_tokens,
+                max_completion_tokens=max_tokens,
+                reasoning_effort=config.REASONING_EFFORT,
             )
             content = response.choices[0].message.content
-            if content is None:
-                logger.warning("OpenAI returned null content.")
-                return ""
-            return content
+            finish_reason = response.choices[0].finish_reason
+
+            if content and content.strip():
+                logger.debug(
+                    f"OpenAI returned content (len={len(content)}, "
+                    f"finish_reason={finish_reason}): {content[:100]}..."
+                )
+                return content
+
+            if finish_reason == "length":
+                logger.warning("OpenAI returned empty content with finish_reason='length'.")
+
+            logger.warning(f"OpenAI returned null/empty content. Full response: {response}")
+            return ""
+
         except OpenAIError as e:
             logger.error(f"OpenAI API error: {e}")
             raise RuntimeError(f"OpenAI API error: {e}") from e

@@ -3,6 +3,7 @@ from __future__ import annotations
 import logging
 import re
 
+from ad_rag_service import config
 from ad_rag_service.llm.interface import LLMClient
 from ad_rag_service.types import AnswerWithCitations, Citation, RetrievedChunk
 
@@ -21,27 +22,28 @@ class AnswerGenerator:
         context_str_parts = []
         for i, chunk in enumerate(chunks, start=1):
             # Format: [i] (PMCID, Section): text
-            # We truncate text slightly if needed? For now, assume it fits
-            # or is handled by max tokens logic elsewhere.
-            # config.MAX_CONTEXT_TOKENS handles retrieval limit, here we just use what we got.
             header = f"[{i}] ({chunk.record.pmcid}, {chunk.record.section_title})"
-            context_str_parts.append(f"{header}: {chunk.record.text}")
+            context_str_parts.append(f"{header}:\n\n{chunk.record.text}")
 
-        context_block = "\n\n".join(context_str_parts)
+        context_block = "\n\n---\n\n".join(context_str_parts)
 
-        return f"""You are an expert Alzheimer's Disease researcher. 
-Answer the user's question using ONLY the provided context below.
-If the context does not contain enough information to answer, 
-say "I don't know based on the provided context."
-Cite the context chunks you use by their ID, e.g. [1], [2].
-Every factual statement must be cited.
+        return f"""You are an expert Alzheimer's Disease researcher.
 
-Context:
-{context_block}
+    ### Instructions
+    Answer the user's question using ONLY the provided context below.  
+    If the context does not contain enough information to answer,  
+    say "I don't know based on the provided context."  
+    Cite the context chunks you use by their ID, e.g. [1], [2].  
+    Every factual statement must be cited.
 
-Question: {query}
+    ### Context
+    {context_block}
 
-Answer:"""
+    ### Question
+    {query}
+
+    ### Answer
+    """
 
     def _parse_citations(self, answer: str, chunks: list[RetrievedChunk]) -> list[Citation]:
         """
@@ -99,7 +101,7 @@ Answer:"""
         # We assume config defaults are handled by the caller or we can inject them.
         # For now, use defaults in Protocol or pass explicit?
         # The class doesn't hold config. We'll use defaults.
-        raw_answer = self.llm_client.complete(prompt)
+        raw_answer = self.llm_client.complete(prompt, config.LLM_TEMPERATURE, config.LLM_MAX_TOKENS)
 
         citations = self._parse_citations(raw_answer, chunks)
 

@@ -3,6 +3,8 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
+import torch
+
 # Resolve repo root relative to this file
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
@@ -36,7 +38,7 @@ MAX_CONTEXT_TOKENS = 3000  # Conservative limit for context window
 # 3. Define the API key environment variable name for the new provider.
 
 ALLOWED_PROVIDERS = {"openai", "anthropic", "dummy"}
-LLM_PROVIDER = os.getenv("LLM_PROVIDER", "dummy")
+LLM_PROVIDER = os.getenv("LLM_PROVIDER", "openai")
 
 if LLM_PROVIDER not in ALLOWED_PROVIDERS:
     raise ValueError(
@@ -55,9 +57,11 @@ elif LLM_PROVIDER == "anthropic":
 else:  # LLM_PROVIDER == "dummy"
     LLM_MODEL_NAME = "dummy-model"
 
-LLM_TEMPERATURE = float(os.getenv("LLM_TEMPERATURE", "0.0"))
-LLM_MAX_TOKENS = int(os.getenv("LLM_MAX_TOKENS", "512"))
+LLM_TEMPERATURE = float(os.getenv("LLM_TEMPERATURE", "0.3"))
+LLM_MAX_TOKENS = int(os.getenv("LLM_MAX_TOKENS", "1000"))
+REASONING_EFFORT = os.getenv("REASONING_EFFORT", "none")
+TOP_K = int(os.getenv("TOP_K", "5"))
 
 # Embedding Config (must match pipeline)
 EMBEDDING_MODEL_ID = os.getenv("EMBEDDING_MODEL_ID", "BAAI/bge-base-en-v1.5")
-EMBEDDING_DEVICE = os.getenv("EMBEDDING_DEVICE", "cpu")
+EMBEDDING_DEVICE = os.getenv("EMBEDDING_DEVICE", "cuda" if torch.cuda.is_available() else "cpu")
