@@ -53,6 +53,7 @@ def test_get_llm_client_dummy_default(set_env_vars):
     Test that get_llm_client returns LLMClientImpl when LLM_PROVIDER is unset (defaults to dummy).
     """
     # Ensure config reloads its values after env var changes
+    os.environ["LLM_PROVIDER"] = "dummy"
     import importlib
 
     importlib.reload(config)

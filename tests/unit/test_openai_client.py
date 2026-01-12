@@ -75,11 +75,17 @@ def test_openai_client_complete(setup_openai_env):
 
         assert response == "Test generated answer."
 
-        mock_create.assert_called_once_with(
+    mock_create.assert_called_once_with(
             model="gpt-5.1-test",
-            messages=[{"role": "user", "content": "Test prompt"}],
+            messages=[
+                {
+                    "role": "user",
+                    "content": "Test prompt\n\nNote: This request has an upper limit on number of output tokens. Please keep your answer to within approximately 50 words.",
+                }
+            ],
             temperature=0.5,
-            max_tokens=100,
+            max_completion_tokens=100,
+            reasoning_effort="none",
         )
 
 

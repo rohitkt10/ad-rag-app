@@ -64,10 +64,15 @@ def test_config_paths():
 
 def test_config_defaults_dummy():
     # When no LLM_PROVIDER is set, it defaults to 'dummy'
+    # We enforce 'dummy' here because .env might be present in the dev environment
+    os.environ["LLM_PROVIDER"] = "dummy"
+    import importlib
+    importlib.reload(config)
+
     assert config.LLM_PROVIDER == "dummy"
     assert config.LLM_MODEL_NAME == "dummy-model"
-    assert config.LLM_TEMPERATURE == 0.0
-    assert config.LLM_MAX_TOKENS == 512
+    assert config.LLM_TEMPERATURE == 0.3
+    assert config.LLM_MAX_TOKENS == 500
     assert config.OPENAI_API_KEY_ENV == "OPENAI_API_KEY"
     assert config.ANTHROPIC_API_KEY_ENV == "ANTHROPIC_API_KEY"
 

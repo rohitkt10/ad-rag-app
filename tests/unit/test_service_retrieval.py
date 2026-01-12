@@ -82,7 +82,7 @@ def test_retrieve_top_k(mock_index_store, mock_embedder):
 
 def test_retrieve_empty_query(mock_index_store, mock_embedder):
     retriever = Retriever(mock_index_store, model_id="dummy", embedder=mock_embedder)
-    results = retriever.retrieve("")
+    results = retriever.retrieve("", k=5)
     assert results == []
     mock_embedder.encode.assert_not_called()
 
@@ -93,4 +93,4 @@ def test_retrieve_index_not_loaded(mock_embedder):
     retriever = Retriever(store, model_id="dummy", embedder=mock_embedder)
 
     with pytest.raises(RuntimeError, match="Index not loaded"):
-        retriever.retrieve("foo")
+        retriever.retrieve("foo", k=5)

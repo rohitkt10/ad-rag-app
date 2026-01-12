@@ -68,9 +68,9 @@ def test_generate_prompt_structure(mock_llm, chunks):
     args = mock_llm.complete.call_args[0]
     prompt = args[0]
 
-    assert "Question: Query" in prompt
-    assert "[1] (PMC1, Intro): APOE4 increases risk." in prompt
-    assert "[2] (PMC2, Results): Tau tangles" in prompt
+    assert "### Question\n    Query" in prompt
+    assert "[1] (PMC1, Intro):\n\nAPOE4 increases risk." in prompt
+    assert "[2] (PMC2, Results):\n\nTau tangles" in prompt
     assert "Answer the user's question using ONLY" in prompt
 
 

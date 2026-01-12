@@ -2,7 +2,7 @@
 
 ![CI](https://github.com/rohitpc/ad-rag-app/actions/workflows/ci.yml/badge.svg)
 
-A specialized Retrieval-Augmented Generation (RAG) system for Alzheimer’s Disease research. This application ingests scientific literature (PMC XML), builds a searchable index, and provides a question-answering interface grounded in biomedical evidence.
+A specialized Retrieval-Augmented Generation (RAG) system for Alzheimer’s Disease biomarkers research. This application ingests scientific literature (PMC XML), builds a searchable index, and provides a question-answering interface grounded in biomedical evidence.
 
 ## Features
 
@@ -96,5 +96,9 @@ The application is configured via environment variables (loaded from `.env`). Ke
 *   **OPENAI_API_KEY** / **ANTHROPIC_API_KEY**: Credentials for the chosen provider.
 *   **EMBEDDING_MODEL_ID**: HuggingFace model ID for embeddings (default: `BAAI/bge-base-en-v1.5`).
 *   **LLM_MODEL_NAME**: Specific model version (e.g., `gpt-5.1` or `claude-3-5-sonnet`).
+*   **LLM_TEMPERATURE**: Controls the randomness of LLM outputs (default: `0.3`).
+*   **LLM_MAX_TOKENS**: Maximum number of tokens for LLM generation (default: `500`).
+*   **REASONING_EFFORT**: (e.g., `none`, `low`, `medium`, `high`) Influences the LLM's reasoning process (default: `none`).
+*   **TOP_K**: Number of top similar chunks to retrieve from the index (default: `3`).
 
 See `src/ad_rag_service/config.py` for all available configuration options.
