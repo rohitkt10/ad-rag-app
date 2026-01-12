@@ -1,6 +1,6 @@
 # Alzheimer’s Disease Biomarkers Q&A RAG Microservice
 
-![CI](https://github.com/rohitpc/ad-rag-app/actions/workflows/ci.yml/badge.svg)
+[![CI](https://github.com/rohitkt10/llm-profiler/actions/workflows/ci.yml/badge.svg)](https://github.com/rohitkt10/llm-profiler/actions/workflows/ci.yml)
 
 A specialized Retrieval-Augmented Generation (RAG) system for Alzheimer’s Disease biomarkers research. This application ingests scientific literature (PMC XML), builds a searchable index, and provides a question-answering interface grounded in biomedical evidence.
 
