@@ -6,9 +6,9 @@ from typing import Protocol
 import numpy as np
 from sentence_transformers import SentenceTransformer
 
+from ad_rag_service import config
 from ad_rag_service.indexing import IndexStore
 from ad_rag_service.types import RetrievedChunk
-from ad_rag_service import config 
 
 logger = logging.getLogger(__name__)
 
