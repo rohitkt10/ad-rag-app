@@ -13,46 +13,66 @@ from ad_rag_service.types import AnswerWithCitations, ChunkRecord, Citation, Ret
 # Fixture to clear and reset environment variables related to config for each test
 @pytest.fixture(autouse=True)
 def reset_config_env_vars():
-    original_llm_provider = os.getenv("LLM_PROVIDER")
-    original_openai_model = os.getenv("OPENAI_MODEL_NAME")
-    original_anthropic_model = os.getenv("ANTHROPIC_MODEL_NAME")
+    with patch("dotenv.load_dotenv"):  # Patch load_dotenv for all tests using this fixture
+        original_llm_provider = os.getenv("LLM_PROVIDER")
+        original_openai_model = os.getenv("OPENAI_MODEL_NAME")
+        original_anthropic_model = os.getenv("ANTHROPIC_MODEL_NAME")
+        original_llm_temperature = os.getenv("LLM_TEMPERATURE")
+        original_llm_max_tokens = os.getenv("LLM_MAX_TOKENS")
 
-    keys_to_clear = ["LLM_PROVIDER", "OPENAI_MODEL_NAME", "ANTHROPIC_MODEL_NAME"]
-    for key in keys_to_clear:
-        if key in os.environ:
-            del os.environ[key]
+        keys_to_clear = [
+            "LLM_PROVIDER",
+            "OPENAI_MODEL_NAME",
+            "ANTHROPIC_MODEL_NAME",
+            "LLM_TEMPERATURE",  # Added to clear for testing defaults
+            "LLM_MAX_TOKENS",  # Added to clear for testing defaults
+        ]
+        for key in keys_to_clear:
+            if key in os.environ:
+                del os.environ[key]
 
-    # Reload config to ensure a clean state
-    import importlib
+        # Reload config to ensure a clean state
+        import importlib
 
-    importlib.reload(config)
+        importlib.reload(config)
 
-    yield
+        yield
 
-    # Restore original env vars
-    for key in keys_to_clear:
-        if key == "LLM_PROVIDER":
-            # Ensure LLM_PROVIDER is valid or unset before reloading config
-            if original_llm_provider in config.ALLOWED_PROVIDERS:
-                os.environ["LLM_PROVIDER"] = original_llm_provider
-            else:
-                if "LLM_PROVIDER" in os.environ:
-                    del os.environ["LLM_PROVIDER"]
-        elif key == "OPENAI_MODEL_NAME":
-            if original_openai_model is not None:
-                os.environ["OPENAI_MODEL_NAME"] = original_openai_model
-            else:
-                if "OPENAI_MODEL_NAME" in os.environ:
-                    del os.environ["OPENAI_MODEL_NAME"]
-        elif key == "ANTHROPIC_MODEL_NAME":
-            if original_anthropic_model is not None:
-                os.environ["ANTHROPIC_MODEL_NAME"] = original_anthropic_model
-            else:
-                if "ANTHROPIC_MODEL_NAME" in os.environ:
-                    del os.environ["ANTHROPIC_MODEL_NAME"]
+        # Restore original env vars
+        for key in keys_to_clear:
+            if key == "LLM_PROVIDER":
+                if original_llm_provider is not None:
+                    os.environ["LLM_PROVIDER"] = original_llm_provider
+                else:
+                    if "LLM_PROVIDER" in os.environ:
+                        del os.environ["LLM_PROVIDER"]
+            elif key == "OPENAI_MODEL_NAME":
+                if original_openai_model is not None:
+                    os.environ["OPENAI_MODEL_NAME"] = original_openai_model
+                else:
+                    if "OPENAI_MODEL_NAME" in os.environ:
+                        del os.environ["OPENAI_MODEL_NAME"]
+            elif key == "ANTHROPIC_MODEL_NAME":
+                if original_anthropic_model is not None:
+                    os.environ["ANTHROPIC_MODEL_NAME"] = original_anthropic_model
+                else:
+                    if "ANTHROPIC_MODEL_NAME" in os.environ:
+                        del os.environ["ANTHROPIC_MODEL_NAME"]
+            elif key == "LLM_TEMPERATURE":
+                if original_llm_temperature is not None:
+                    os.environ["LLM_TEMPERATURE"] = original_llm_temperature
+                else:
+                    if "LLM_TEMPERATURE" in os.environ:
+                        del os.environ["LLM_TEMPERATURE"]
+            elif key == "LLM_MAX_TOKENS":
+                if original_llm_max_tokens is not None:
+                    os.environ["LLM_MAX_TOKENS"] = original_llm_max_tokens
+                else:
+                    if "LLM_MAX_TOKENS" in os.environ:
+                        del os.environ["LLM_MAX_TOKENS"]
 
-    # Reload config again after restoring env vars
-    importlib.reload(config)
+        # Reload config again after restoring env vars
+        importlib.reload(config)
 
 
 def test_config_paths():
@@ -68,17 +88,11 @@ def test_config_defaults_dummy():
     # We enforce 'dummy' here because .env might be present in the dev environment
     os.environ["LLM_PROVIDER"] = "dummy"
 
-    # Ensure other config vars are unset to test pure defaults
-    if "LLM_TEMPERATURE" in os.environ:
-        del os.environ["LLM_TEMPERATURE"]
-    if "LLM_MAX_TOKENS" in os.environ:
-        del os.environ["LLM_MAX_TOKENS"]
-
+    # With load_dotenv patched by the fixture, direct os.environ manipulation
+    # and config defaults will be used reliably.
     import importlib
 
-    # Patch load_dotenv to prevent reading .env during reload
-    with patch("dotenv.load_dotenv"):
-        importlib.reload(config)
+    importlib.reload(config)
 
     assert config.LLM_PROVIDER == "dummy"
     assert config.LLM_MODEL_NAME == "dummy-model"
@@ -117,7 +131,7 @@ def test_config_anthropic_defaults():
 
     importlib.reload(config)
     assert config.LLM_PROVIDER == "anthropic"
-    assert config.LLM_MODEL_NAME == "claude-3-5-sonnet"
+    assert config.LLM_MODEL_NAME == "claude-sonnet-4-5"
 
 
 def test_config_openai_model_override():

@@ -37,6 +37,14 @@ class AnthropicClient(LLMClient):
         Generate a completion using Anthropic Claude.
         """
         try:
+            # Estimate a safe word limit (approx 0.5 words per token)
+            safe_word_limit = int(max_tokens * 0.5)
+            system_instruction = (
+                f"\n\nNote: This request has an upper limit on number of output tokens. "
+                f"Please keep your answer to within approximately {safe_word_limit} words."
+            )
+            final_prompt = prompt + system_instruction
+
             logger.debug(
                 "Sending request to Anthropic (model=%s, temp=%s, max_tokens=%s)",
                 self.model,
@@ -45,7 +53,7 @@ class AnthropicClient(LLMClient):
             )
             response = self.client.messages.create(
                 model=self.model,
-                messages=[{"role": "user", "content": prompt}],
+                messages=[{"role": "user", "content": final_prompt}],
                 temperature=temperature,
                 max_tokens=max_tokens,
             )

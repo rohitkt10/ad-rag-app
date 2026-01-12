@@ -70,7 +70,15 @@ def test_anthropic_client_complete(setup_anthropic_env):
 
         mock_create.assert_called_once_with(
             model="claude-3-test",
-            messages=[{"role": "user", "content": "Prompt"}],
+            messages=[
+                {
+                    "role": "user",
+                    "content": (
+                        "Prompt\n\nNote: This request has an upper limit on number of "
+                        "output tokens. Please keep your answer to within approximately 100 words."
+                    ),
+                }
+            ],
             temperature=0.7,
             max_tokens=200,
         )

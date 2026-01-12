@@ -44,7 +44,10 @@ filterwarnings = [
 [tool.ruff]
 line-length = 100
 target-version = "py312"
-exclude = ["scripts/test_openai_integration.py"]
+exclude = [
+    "scripts/test_openai_integration.py",
+    "scripts/test_anthropic_integration.py"
+]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP"]

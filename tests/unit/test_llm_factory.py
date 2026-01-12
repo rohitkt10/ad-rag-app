@@ -17,6 +17,8 @@ def set_env_vars():
         original_llm_provider = os.getenv("LLM_PROVIDER")
         original_openai_model = os.getenv("OPENAI_MODEL_NAME")
         original_anthropic_model = os.getenv("ANTHROPIC_MODEL_NAME")
+        original_llm_temperature = os.getenv("LLM_TEMPERATURE")
+        original_llm_max_tokens = os.getenv("LLM_MAX_TOKENS")
 
         # Clear env vars to ensure clean state for each test
         if "LLM_PROVIDER" in os.environ:
@@ -25,6 +27,10 @@ def set_env_vars():
             del os.environ["OPENAI_MODEL_NAME"]
         if "ANTHROPIC_MODEL_NAME" in os.environ:
             del os.environ["ANTHROPIC_MODEL_NAME"]
+        if "LLM_TEMPERATURE" in os.environ:
+            del os.environ["LLM_TEMPERATURE"]
+        if "LLM_MAX_TOKENS" in os.environ:
+            del os.environ["LLM_MAX_TOKENS"]
 
         yield  # Run the test
 
@@ -46,6 +52,18 @@ def set_env_vars():
         else:
             if "ANTHROPIC_MODEL_NAME" in os.environ:
                 del os.environ["ANTHROPIC_MODEL_NAME"]
+
+        if original_llm_temperature is not None:
+            os.environ["LLM_TEMPERATURE"] = original_llm_temperature
+        else:
+            if "LLM_TEMPERATURE" in os.environ:
+                del os.environ["LLM_TEMPERATURE"]
+
+        if original_llm_max_tokens is not None:
+            os.environ["LLM_MAX_TOKENS"] = original_llm_max_tokens
+        else:
+            if "LLM_MAX_TOKENS" in os.environ:
+                del os.environ["LLM_MAX_TOKENS"]
 
 
 def test_get_llm_client_dummy_default(set_env_vars):
@@ -124,7 +142,7 @@ def test_get_llm_client_anthropic_success(set_env_vars):
         client = get_llm_client()
         assert client == MockClient.return_value
 
-    assert config.LLM_MODEL_NAME == "claude-3-5-sonnet"
+    assert config.LLM_MODEL_NAME == "claude-sonnet-4-5"
 
 
 def test_config_model_name_override_openai(set_env_vars):

@@ -95,7 +95,7 @@ The application is configured via environment variables (loaded from `.env`). Ke
 *   **LLM_PROVIDER**: `openai` or `anthropic`.
 *   **OPENAI_API_KEY** / **ANTHROPIC_API_KEY**: Credentials for the chosen provider.
 *   **EMBEDDING_MODEL_ID**: HuggingFace model ID for embeddings (default: `BAAI/bge-base-en-v1.5`).
-*   **LLM_MODEL_NAME**: Specific model version (e.g., `gpt-5.1` or `claude-3-5-sonnet`).
+*   **LLM_MODEL_NAME**: Specific model version (e.g., `gpt-5.1` or `claude-sonnet-4-5`).
 *   **LLM_TEMPERATURE**: Controls the randomness of LLM outputs (default: `0.3`).
 *   **LLM_MAX_TOKENS**: Maximum number of tokens for LLM generation (default: `500`).
 *   **REASONING_EFFORT**: (e.g., `none`, `low`, `medium`, `high`) Influences the LLM's reasoning process (default: `none`).
