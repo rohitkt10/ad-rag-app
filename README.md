@@ -1,6 +1,6 @@
 # Alzheimer’s Disease Biomarkers Q&A RAG Microservice
 
-[![CI](https://github.com/rohitpc/ad-rag-app/actions/workflows/ci.yml/badge.svg)](https://github.com/rohitpc/ad-rag-app/actions/workflows/ci.yml)
+[![CI](https://github.com/rohitkt10/ad-rag-app/actions/workflows/ci.yml/badge.svg)](https://github.com/rohitkt10/ad-rag-app/actions/workflows/ci.yml)
 
 A specialized Retrieval-Augmented Generation (RAG) system for Alzheimer’s Disease biomarkers research. This application ingests scientific literature (PMC XML), builds a searchable index, and provides a question-answering interface grounded in biomedical evidence.
 
@@ -54,7 +54,7 @@ The RAG Service is deployed to Google Cloud Run:
    ```bash
    git clone https://github.com/rohitpc/ad-rag-app.git
    cd ad-rag-app
-````
+   ```
 
 2. **Set up environment variables:**
    Copy the example environment file and configure your API keys (OpenAI or Anthropic).
