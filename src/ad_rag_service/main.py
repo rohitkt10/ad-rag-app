@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Any
 
 from fastapi import FastAPI, HTTPException, status
+from google.cloud import storage
 from pydantic import BaseModel, Field
 
 from ad_rag_pipeline import config as pipeline_config
@@ -28,6 +29,21 @@ logger = logging.getLogger(__name__)
 rag_service: RAGService | None = None
 
 
+def _download_blob(bucket_name: str, source_blob_name: str, destination_file_path: Path) -> None:
+    """Downloads a blob from the bucket to a local file."""
+    try:
+        storage_client = storage.Client()
+        bucket = storage_client.bucket(bucket_name)
+        blob = bucket.blob(source_blob_name)
+
+        destination_file_path.parent.mkdir(parents=True, exist_ok=True)
+        blob.download_to_filename(destination_file_path)
+        logger.info(f"Downloaded gs://{bucket_name}/{source_blob_name} to {destination_file_path}")
+    except Exception as e:
+        logger.error(f"Failed to download gs://{bucket_name}/{source_blob_name}: {e}")
+        raise
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """
@@ -37,6 +53,35 @@ async def lifespan(app: FastAPI):
 
     logger.info("Service startup: Initializing RAG components...")
     try:
+        # --- GCS Artifact Download (if configured) ---
+        if config.GCS_BUCKET:
+            logger.info(
+                f"GCS_BUCKET is set ({config.GCS_BUCKET}). Attempting to download artifacts."
+            )
+            # Ensure the local directory for artifacts exists
+            config.INDEX_DIR.mkdir(parents=True, exist_ok=True)
+
+            gcs_base_path = "artifacts"  # as per DEPLOYMENT_PLAN.md
+
+            _download_blob(
+                config.GCS_BUCKET,
+                f"{gcs_base_path}/faiss.index",
+                config.FAISS_INDEX_PATH,
+            )
+            _download_blob(
+                config.GCS_BUCKET,
+                f"{gcs_base_path}/lookup.jsonl",
+                config.LOOKUP_JSONL_PATH,
+            )
+            _download_blob(
+                config.GCS_BUCKET,
+                f"{gcs_base_path}/index.meta.json",
+                config.MANIFEST_JSON_PATH,
+            )
+            logger.info("GCS artifacts download complete.")
+        else:
+            logger.info("GCS_BUCKET not set. Assuming artifacts are available locally.")
+
         # Phase 1: IndexStore
         index_store = IndexStore(
             index_path=config.FAISS_INDEX_PATH,

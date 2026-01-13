@@ -134,3 +134,4 @@ docs/DEPLOYMENT_PLAN.md
 docs/EVALUATION_PLAN.md
 docs/OBSERVABILITY_SCALING_PLAN.md
 docs/tutorials/
+gcp_deploy.sh

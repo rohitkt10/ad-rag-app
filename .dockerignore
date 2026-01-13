@@ -1,0 +1,16 @@
+.venv/
+data/
+tests/
+docs/
+.git/
+.github/
+artifacts/
+.gemini/
+.env
+.pytest_cache/
+.ruff_cache/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.DS_Store

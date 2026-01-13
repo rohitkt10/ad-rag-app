@@ -35,6 +35,14 @@ flowchart LR
   end
 ```
 
+## Live Demo
+
+The RAG Service is deployed to Google Cloud Run:
+
+*   **API Base URL:** `https://ad-rag-api-226095745164.us-central1.run.app`
+*   **API Documentation (Swagger UI):** [`https://ad-rag-api-226095745164.us-central1.run.app/docs`](https://ad-rag-api-226095745164.us-central1.run.app/docs)
+*   **Health Check:** [`https://ad-rag-api-226095745164.us-central1.run.app/health`](https://ad-rag-api-226095745164.us-central1.run.app/health)
+
 ## Prerequisites
 
 - Python 3.12+

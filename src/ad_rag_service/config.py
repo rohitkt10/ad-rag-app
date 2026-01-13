@@ -17,7 +17,13 @@ except ImportError:
     pass
 
 # Artifacts
-ARTIFACTS_DIR = REPO_ROOT / "artifacts"
+# Allow overriding for Cloud Run (e.g. /tmp/artifacts)
+_env_artifacts_dir = os.getenv("ARTIFACTS_DIR")
+if _env_artifacts_dir:
+    ARTIFACTS_DIR = Path(_env_artifacts_dir)
+else:
+    ARTIFACTS_DIR = REPO_ROOT / "artifacts"
+
 INDEX_DIR = ARTIFACTS_DIR / "index"
 
 # Index Paths
@@ -25,9 +31,8 @@ FAISS_INDEX_PATH = INDEX_DIR / "faiss.index"
 LOOKUP_JSONL_PATH = INDEX_DIR / "lookup.jsonl"
 MANIFEST_JSON_PATH = INDEX_DIR / "index.meta.json"
 
-# Retrieval Defaults
-TOP_K = 5
-MAX_CONTEXT_TOKENS = 3000  # Conservative limit for context window
+# GCS Config
+GCS_BUCKET = os.getenv("GCS_BUCKET")  # If set, artifacts will be downloaded from here
 
 # LLM Config
 # --- LLM Provider and Model Selection ---
